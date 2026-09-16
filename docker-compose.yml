@@ -1,14 +1,12 @@
 services:
   course-service:
-    container_name: course
-    build: ./course-service
+    build:
+      context: ./course-service
     ports:
       - "8002:8002"
 
   student-service:
-    container_name: student
-    build: ./student-service
+    build:
+      context: ./student-service
     ports:
       - "8001:8001"
-    depends_on:
-      - course-service
