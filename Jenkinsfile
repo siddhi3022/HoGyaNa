@@ -6,9 +6,12 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/siddhi3022/HoGyaNa.git'
+                git branch: 'main',
+                    url: 'https://github.com/siddhi3022/HoGyaNa.git'
+
                 echo 'Source code checked out successfully.'
             }
         }
@@ -37,10 +40,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat 'docker-compose down --remove-orphans'
-                bat '''
-                    for /f "tokens=*" %%i in ('docker ps -q --filter "publish=8001"') do docker rm -f %%i
-                    for /f "tokens=*" %%i in ('docker ps -q --filter "publish=8002"') do docker rm -f %%i
-                '''
                 bat 'docker-compose up -d'
             }
         }
@@ -57,6 +56,7 @@ pipeline {
         success {
             echo 'Deployment Successful.'
         }
+
         failure {
             echo 'Pipeline Failed. Check Console Output.'
         }
