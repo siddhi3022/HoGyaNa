@@ -9,7 +9,7 @@ A simple FastAPI microservices project with two independent services.
 ## Communication
 Student Service communicates synchronously with Course Service using HTTPX when enrolling a student.
 
-## Run
+## Run with Docker Compose
 ```bash
 docker-compose build
 docker-compose up -d
@@ -21,6 +21,5 @@ docker-compose ps
 - http://localhost:8002/docs
 
 ## Jenkins
-GitHub -> Jenkins -> Test -> Docker Build -> Docker Compose Deploy -> Service Verification
+GitHub -> Jenkins -> Environment -> Install Dependencies -> Docker Build -> Deploy -> Final Status
 
-Replace `YOUR_GITHUB_REPOSITORY_URL` in Jenkinsfile with the actual repository URL.

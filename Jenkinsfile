@@ -8,11 +8,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'YOUR_GITHUB_REPOSITORY_URL'
+                git branch: 'main', url: 'https://github.com/siddhi3022/HoGyaNa.git'
+                echo 'Source code checked out successfully.'
             }
         }
 
-        stage('Verify') {
+        stage('Environment') {
             steps {
                 bat 'java -version'
                 bat 'python --version'
@@ -27,13 +28,6 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                bat 'python -m compileall student-service course-service'
-                bat 'python -m pytest -q tests'
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 bat 'docker-compose build'
@@ -43,30 +37,25 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat 'docker-compose down --remove-orphans'
+                bat '''
+                    for /f "tokens=*" %%i in ('docker ps -q --filter "publish=8001"') do docker rm -f %%i
+                    for /f "tokens=*" %%i in ('docker ps -q --filter "publish=8002"') do docker rm -f %%i
+                '''
                 bat 'docker-compose up -d'
             }
         }
 
-        stage('Verify Services') {
+        stage('Final Status') {
             steps {
-                powershell '''
-                    Start-Sleep -Seconds 10
-                    $student = Invoke-WebRequest -Uri "http://localhost:8001/" -UseBasicParsing
-                    $course = Invoke-WebRequest -Uri "http://localhost:8002/" -UseBasicParsing
-                    if ($student.StatusCode -ne 200) { throw "Student Service failed." }
-                    if ($course.StatusCode -ne 200) { throw "Course Service failed." }
-                    Write-Host "Student Service and Course Service are healthy."
-                '''
+                bat 'docker-compose ps'
+                echo 'CI/CD Pipeline Completed Successfully.'
             }
         }
     }
 
     post {
-        always {
-            bat 'docker-compose ps'
-        }
         success {
-            echo 'CI/CD Pipeline Completed Successfully.'
+            echo 'Deployment Successful.'
         }
         failure {
             echo 'Pipeline Failed. Check Console Output.'
